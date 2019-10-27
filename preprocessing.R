@@ -1,6 +1,6 @@
 library(mice)
 
-path = "C:/Users/Tanay/College/3rd_year/5th_sem/Machine-Learning/Project/Data"
+path = "path/to/data"
 newdata = read.csv(paste0(path,"/Andhra_dataset2.csv"))
 
 
