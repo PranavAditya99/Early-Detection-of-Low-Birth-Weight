@@ -1,6 +1,5 @@
 #Reference : My notes from Andrew Ng's ML course
 #gives 70-90% accuracy - It's unreliable - probably cause data is not linearly seperable
-#Average 72-73% accuracy
 #Gave 47% once and 95% once
 
 import tensorflow as tf
@@ -70,6 +69,8 @@ data = one_hot_encoding(data,data.res)
 #print(data.head())
 
 acclist = list()
+precision = list()
+recall = list()
 for i in range(10):
     train,test = train_test_split(data,shuffle = True, test_size = 0.2)
     train_y = train['reslt']
@@ -92,6 +93,11 @@ for i in range(10):
     
     preds = classifier.predict(test_x,0.5)
     prediction = list()
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+    
     for x in preds:
         if(x):
             prediction.append(1)
@@ -102,6 +108,20 @@ for i in range(10):
     for a,b in zip(prediction,test_y):
         if a==b:
             c+=1
+    for a,b in zip(prediction,test_y):
+        if a==b==1:
+            tp+=1
+        elif a==b==0:
+            tn+=1
+        elif a==1 and b==0:
+            fp+=1
+        else:
+            fn+=1
+            
+    precision.append((tp/(tp+fp)))
+    recall.append((tp/(tp+fn)))
     acclist.append(c/test_y.size)      
 
 print("Accuracy: ",sum(acclist)/len(acclist))
+print("Precision: ",sum(precision)/len(precision))
+print("Recall: ",sum(recall)/len(recall))
