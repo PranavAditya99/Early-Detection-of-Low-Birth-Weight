@@ -60,7 +60,7 @@ def one_hot_encoding(data,col):
 random.seed(19)
 path = "C:/Users/Tanay/College/3rd_year/5th_sem/Machine-Learning/Project/Data/"
 
-data = pd.read_csv(path+'ImputedAndhraData.csv')
+data = pd.read_csv(path+'NewImputedDataset.csv')
 
 data = one_hot_encoding(data,data.community)
 #print(type(data))
@@ -86,6 +86,7 @@ for i in range(10):
     train_x = np.array(train_x, dtype = 'float64')
     test_x = np.array(test_x, dtype = 'float64')
     #print(train_y)
+    print(train_x)
     
     classifier = Logistic(n=500000,alpha = 0.5)
     
