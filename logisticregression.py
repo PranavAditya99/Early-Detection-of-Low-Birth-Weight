@@ -1,5 +1,6 @@
 #Reference : My notes from Andrew Ng's ML course
 #gives 70-90% accuracy - It's unreliable - probably cause data is not linearly seperable
+#Average 72-73% accuracy
 #Gave 47% once and 95% once
 
 import tensorflow as tf
@@ -31,45 +32,76 @@ class Logistic:
             #print(y.size)
             #print(grad.shape)
             self.theta = self.theta - self.alpha*grad
-            if(i%50000==0):
+            if(i%250000==0):
                 print(f'loss:{self.costfunction(sig,y,y.size)}')
     
     def predict(self,x,thresh):
         return self.sigmoid(np.dot(x,self.theta))>thresh
             
 
+
+def one_hot_encoding(data,col):  
+    new_cols=list(map(str,np.unique(col)))
+    
+    data1=pd.DataFrame(columns=new_cols)
+    d=dict()
+    for i in new_cols:
+        d[i]=0
+    for i in col:
+        d[str(i)]=1
+        data1=data1.append(d,ignore_index=True)
+        d[str(i)]=0
+    data=data.drop([col.name],axis=1)
+    for i in range(len(new_cols)):
+        new_cols[i]=col.name+new_cols[i]
+    data1.columns=new_cols
+    bigdata = data1.join(data)
+    return bigdata
+
 random.seed(19)
 path = "C:/Users/Tanay/College/3rd_year/5th_sem/Machine-Learning/Project/Data/"
 
 data = pd.read_csv(path+'ImputedAndhraData.csv')
 
-train,test = train_test_split(data,shuffle = True, test_size = 0.2)
-train_y = train['reslt']
-train_x = train.drop(['reslt'],axis=1)
+data = one_hot_encoding(data,data.community)
+#print(type(data))
+data = one_hot_encoding(data,data.res)
 
-test_y = test['reslt']
-test_x = test.drop(['reslt'],axis=1)
+#print(data.head())
 
-train_x = train_x.values
-train_y = train_y.values
-test_x = test_x.values
-test_y = test_y.values
+acclist = list()
+for i in range(10):
+    train,test = train_test_split(data,shuffle = True, test_size = 0.2)
+    train_y = train['reslt']
+    train_x = train.drop(['reslt'],axis=1)
+    
+    test_y = test['reslt']
+    test_x = test.drop(['reslt'],axis=1)
+    
+    train_x = train_x.values
+    train_y = train_y.values
+    test_x = test_x.values
+    test_y = test_y.values
+    train_x = np.array(train_x, dtype = 'float64')
+    test_x = np.array(test_x, dtype = 'float64')
+    #print(train_y)
+    
+    classifier = Logistic(n=500000,alpha = 0.5)
+    
+    classifier.gradientdescent(train_x,train_y)
+    
+    preds = classifier.predict(test_x,0.5)
+    prediction = list()
+    for x in preds:
+        if(x):
+            prediction.append(1)
+        else:
+            prediction.append(0)
+    
+    c=0
+    for a,b in zip(prediction,test_y):
+        if a==b:
+            c+=1
+    acclist.append(c/test_y.size)      
 
-
-classifier = Logistic(n=500000,alpha = 0.5)
-
-classifier.gradientdescent(train_x,train_y)
-
-preds = classifier.predict(test_x,0.5)
-prediction = list()
-for x in preds:
-    if(x):
-        prediction.append(1)
-    else:
-        prediction.append(0)
-
-c=0
-for a,b in zip(prediction,test_y):
-    if a==b:
-        c+=1
-print("Accuracy: ",c/test_y.size)
+print("Accuracy: ",sum(acclist)/len(acclist))
