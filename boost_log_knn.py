@@ -1,7 +1,3 @@
-#Reference : My notes from Andrew Ng's ML course
-#gives 70-90% accuracy - It's unreliable - probably cause data is not linearly seperable
-#Gave 47% once and 95% once
-
 import tensorflow as tf
 import numpy as np
 import pandas as pd
